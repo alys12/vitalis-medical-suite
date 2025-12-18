@@ -1,6 +1,6 @@
 # Vitalis Medical Suite
 
-[cloudflarebutton]
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/alys12/vitalis-medical-suite)
 
 **Vitalis** is a next-generation, visually immersive medical practice management dashboard designed to streamline clinical workflows while providing deep analytical insights. It serves as the central nervous system for modern clinics, offering a unified interface for patient management, appointment scheduling, and operational analytics.
 
@@ -86,7 +86,7 @@ bun run build
 
 This application is designed to be deployed to Cloudflare Workers.
 
-[cloudflarebutton]
+[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/alys12/vitalis-medical-suite)
 
 ### Manual Deployment
 
