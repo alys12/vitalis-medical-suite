@@ -1,19 +1,19 @@
 import React, { useState } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
-import { Patient } from '@/lib/mock-medical-data';
+import { MOCK_PATIENTS, Patient } from '@/lib/mock-medical-data';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
+import { 
+  Table, 
+  TableBody, 
+  TableCell, 
+  TableHead, 
+  TableHeader, 
+  TableRow 
 } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Search, Filter, MoreHorizontal, FileText, Calendar, Loader2 } from 'lucide-react';
+import { Search, Filter, MoreHorizontal, FileText, Calendar } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,18 +23,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from '@/components/ThemeToggle';
-import { PatientDetailSheet } from '@/components/patients/PatientDetailSheet';
-import { usePatients } from '@/lib/api-hooks';
-import { Skeleton } from '@/components/ui/skeleton';
 export function PatientsPage() {
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const { data: patients, isLoading, error } = usePatients();
-  const filteredPatients = patients?.filter(patient =>
+  const filteredPatients = MOCK_PATIENTS.filter(patient => 
     patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     patient.id.toLowerCase().includes(searchTerm.toLowerCase())
-  ) ?? [];
+  );
   const getStatusColor = (status: Patient['status']) => {
     switch (status) {
       case 'Active': return 'bg-green-100 text-green-700 hover:bg-green-200 border-green-200';
@@ -52,20 +46,6 @@ export function PatientsPage() {
       .toUpperCase()
       .slice(0, 2);
   };
-  const handleViewDetails = (patient: Patient) => {
-    setSelectedPatient(patient);
-    setIsSheetOpen(true);
-  };
-  if (error) {
-    return (
-      <AppLayout container contentClassName="flex items-center justify-center min-h-screen">
-        <div className="text-center text-red-500">
-          <h2 className="text-lg font-bold">Failed to load patients</h2>
-          <p>{(error as Error).message}</p>
-        </div>
-      </AppLayout>
-    );
-  }
   return (
     <AppLayout container contentClassName="space-y-8 bg-slate-50/50 dark:bg-background min-h-screen">
       {/* Header */}
@@ -87,8 +67,8 @@ export function PatientsPage() {
       <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-white dark:bg-card p-4 rounded-xl shadow-sm border">
         <div className="relative w-full sm:w-96">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input
-            placeholder="Search by name or ID..."
+          <Input 
+            placeholder="Search by name or ID..." 
             className="pl-9"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -115,24 +95,9 @@ export function PatientsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {isLoading ? (
-              Array.from({ length: 5 }).map((_, i) => (
-                <TableRow key={i}>
-                  <TableCell><Skeleton className="h-10 w-40" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-20" /></TableCell>
-                  <TableCell><Skeleton className="h-6 w-20 rounded-full" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-24" /></TableCell>
-                  <TableCell><Skeleton className="h-8 w-8 ml-auto rounded-full" /></TableCell>
-                </TableRow>
-              ))
-            ) : filteredPatients.length > 0 ? (
+            {filteredPatients.length > 0 ? (
               filteredPatients.map((patient) => (
-                <TableRow
-                  key={patient.id}
-                  className="hover:bg-slate-50/50 dark:hover:bg-muted/50 transition-colors cursor-pointer"
-                  onClick={() => handleViewDetails(patient)}
-                >
+                <TableRow key={patient.id} className="hover:bg-slate-50/50 dark:hover:bg-muted/50 transition-colors">
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <Avatar className="h-9 w-9 border border-slate-200">
@@ -167,9 +132,9 @@ export function PatientsPage() {
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+                      <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem onClick={() => handleViewDetails(patient)}>
+                        <DropdownMenuItem>
                           <FileText className="mr-2 h-4 w-4" /> View Details
                         </DropdownMenuItem>
                         <DropdownMenuItem>
@@ -194,11 +159,6 @@ export function PatientsPage() {
           </TableBody>
         </Table>
       </div>
-      <PatientDetailSheet
-        patient={selectedPatient}
-        open={isSheetOpen}
-        onOpenChange={setIsSheetOpen}
-      />
     </AppLayout>
   );
 }
