@@ -2,21 +2,45 @@ import { Hono } from "hono";
 import type { Env } from './core-utils';
 import { UserEntity, ChatBoardEntity, PatientEntity, AppointmentEntity } from "./entities";
 import { ok, bad, notFound, isStr } from './core-utils';
-import { 
-  MOCK_STATS, MOCK_ACTIVITY, MOCK_CHART_DATA, 
-  MOCK_REVENUE_BY_SERVICE, MOCK_DEMOGRAPHICS, MOCK_APPOINTMENT_TRENDS 
+import {
+  MOCK_STATS, MOCK_ACTIVITY, MOCK_CHART_DATA,
+  MOCK_REVENUE_BY_SERVICE, MOCK_DEMOGRAPHICS, MOCK_APPOINTMENT_TRENDS
 } from "@shared/mock-data";
 import type { Patient, Appointment } from "@shared/types";
+import { isSameDay } from "date-fns";
 export function userRoutes(app: Hono<{ Bindings: Env }>) {
   app.get('/api/test', (c) => c.json({ success: true, data: { name: 'CF Workers Demo' }}));
   // --- DASHBOARD ---
   app.get('/api/dashboard', async (c) => {
-    // In a real app, these would be aggregated from real data.
-    // For this phase, we serve the rich mock data but ensure entities are seeded.
+    // Ensure entities are seeded with initial data if empty
     await PatientEntity.ensureSeed(c.env);
     await AppointmentEntity.ensureSeed(c.env);
+    // Fetch real data from Durable Objects to calculate dynamic stats
+    // Using a large limit to get all items for this demo. 
+    // In production, you would use a dedicated counter or aggregation DO.
+    const { items: patients } = await PatientEntity.list(c.env, null, 1000);
+    const { items: appointments } = await AppointmentEntity.list(c.env, null, 1000);
+    const totalPatients = patients.length;
+    const today = new Date();
+    const appointmentsToday = appointments.filter(apt => {
+      try {
+        return isSameDay(new Date(apt.start), today);
+      } catch (e) {
+        return false;
+      }
+    }).length;
+    // Update the mock stats with real values
+    const dynamicStats = MOCK_STATS.map(stat => {
+      if (stat.label === 'Total Patients') {
+        return { ...stat, value: totalPatients.toLocaleString() };
+      }
+      if (stat.label === 'Appointments Today') {
+        return { ...stat, value: appointmentsToday.toString() };
+      }
+      return stat;
+    });
     return ok(c, {
-      stats: MOCK_STATS,
+      stats: dynamicStats,
       chartData: MOCK_CHART_DATA,
       activity: MOCK_ACTIVITY
     });

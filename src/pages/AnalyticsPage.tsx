@@ -56,8 +56,8 @@ export function AnalyticsPage() {
           </>
         ) : (
           <>
-            <RevenueChart />
-            <DemographicsChart />
+            <RevenueChart data={analyticsData?.revenue ?? []} />
+            <DemographicsChart data={analyticsData?.demographics ?? []} />
           </>
         )}
       </div>
