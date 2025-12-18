@@ -12,6 +12,7 @@ import { RouteErrorBoundary } from '@/components/RouteErrorBoundary';
 import '@/index.css'
 import { HomePage } from '@/pages/HomePage'
 import { PatientsPage } from '@/pages/PatientsPage'
+import { SchedulePage } from '@/pages/SchedulePage'
 const router = createBrowserRouter([
   {
     path: "/",
@@ -23,11 +24,12 @@ const router = createBrowserRouter([
     element: <PatientsPage />,
     errorElement: <RouteErrorBoundary />,
   },
-  // Fallback for demo routes to prevent 404s during development
   {
     path: "/schedule",
-    element: <HomePage />, // Placeholder
+    element: <SchedulePage />,
+    errorElement: <RouteErrorBoundary />,
   },
+  // Fallback for demo routes to prevent 404s during development
   {
     path: "/analytics",
     element: <HomePage />, // Placeholder

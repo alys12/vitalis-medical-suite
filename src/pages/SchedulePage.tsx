@@ -1,29 +1,17 @@
 import React, { useState } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
 import { WeekCalendar } from '@/components/schedule/WeekCalendar';
+import { MOCK_APPOINTMENTS } from '@/lib/mock-medical-data';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronRight, Plus, Loader2 } from 'lucide-react';
+import { Calendar as CalendarIcon, ChevronLeft, ChevronRight, Plus } from 'lucide-react';
 import { addWeeks, subWeeks, format } from 'date-fns';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { Card, CardContent } from '@/components/ui/card';
-import { useAppointments } from '@/lib/api-hooks';
-import { Skeleton } from '@/components/ui/skeleton';
 export function SchedulePage() {
   const [currentDate, setCurrentDate] = useState(new Date());
-  const { data: appointments, isLoading, error } = useAppointments();
   const handlePrevWeek = () => setCurrentDate(subWeeks(currentDate, 1));
   const handleNextWeek = () => setCurrentDate(addWeeks(currentDate, 1));
   const handleToday = () => setCurrentDate(new Date());
-  if (error) {
-    return (
-      <AppLayout container contentClassName="flex items-center justify-center min-h-screen">
-        <div className="text-center text-red-500">
-          <h2 className="text-lg font-bold">Failed to load schedule</h2>
-          <p>{(error as Error).message}</p>
-        </div>
-      </AppLayout>
-    );
-  }
   return (
     <AppLayout container contentClassName="h-[calc(100vh-4rem)] flex flex-col space-y-6 bg-slate-50/50 dark:bg-background">
       {/* Header */}
@@ -68,8 +56,8 @@ export function SchedulePage() {
                 </div>
                 <div className="grid grid-cols-7 gap-1 text-sm">
                   {Array.from({ length: 35 }).map((_, i) => (
-                    <div
-                      key={i}
+                    <div 
+                      key={i} 
                       className={`h-7 w-7 flex items-center justify-center rounded-full cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700 ${i === 12 ? 'bg-teal-600 text-white hover:bg-teal-700' : ''}`}
                     >
                       {(i % 30) + 1}
@@ -123,13 +111,8 @@ export function SchedulePage() {
               <Button variant="ghost" size="sm" className="h-7 px-3 text-xs text-muted-foreground">List</Button>
             </div>
           </div>
-          <div className="flex-1 min-h-0 relative">
-            {isLoading ? (
-              <div className="absolute inset-0 flex items-center justify-center bg-white/50 dark:bg-black/50 z-10">
-                <Loader2 className="h-8 w-8 animate-spin text-teal-600" />
-              </div>
-            ) : null}
-            <WeekCalendar date={currentDate} appointments={appointments ?? []} />
+          <div className="flex-1 min-h-0">
+            <WeekCalendar date={currentDate} appointments={MOCK_APPOINTMENTS} />
           </div>
         </div>
       </div>

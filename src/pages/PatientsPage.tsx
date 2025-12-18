@@ -3,13 +3,13 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { MOCK_PATIENTS, Patient } from '@/lib/mock-medical-data';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
 } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -23,9 +23,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { PatientDetailSheet } from '@/components/patients/PatientDetailSheet';
 export function PatientsPage() {
   const [searchTerm, setSearchTerm] = useState('');
-  const filteredPatients = MOCK_PATIENTS.filter(patient => 
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const filteredPatients = MOCK_PATIENTS.filter(patient =>
     patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     patient.id.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -45,6 +48,10 @@ export function PatientsPage() {
       .join('')
       .toUpperCase()
       .slice(0, 2);
+  };
+  const handleViewDetails = (patient: Patient) => {
+    setSelectedPatient(patient);
+    setIsSheetOpen(true);
   };
   return (
     <AppLayout container contentClassName="space-y-8 bg-slate-50/50 dark:bg-background min-h-screen">
@@ -67,8 +74,8 @@ export function PatientsPage() {
       <div className="flex flex-col sm:flex-row gap-4 items-center justify-between bg-white dark:bg-card p-4 rounded-xl shadow-sm border">
         <div className="relative w-full sm:w-96">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-          <Input 
-            placeholder="Search by name or ID..." 
+          <Input
+            placeholder="Search by name or ID..."
             className="pl-9"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -97,7 +104,11 @@ export function PatientsPage() {
           <TableBody>
             {filteredPatients.length > 0 ? (
               filteredPatients.map((patient) => (
-                <TableRow key={patient.id} className="hover:bg-slate-50/50 dark:hover:bg-muted/50 transition-colors">
+                <TableRow 
+                  key={patient.id} 
+                  className="hover:bg-slate-50/50 dark:hover:bg-muted/50 transition-colors cursor-pointer"
+                  onClick={() => handleViewDetails(patient)}
+                >
                   <TableCell>
                     <div className="flex items-center gap-3">
                       <Avatar className="h-9 w-9 border border-slate-200">
@@ -132,9 +143,9 @@ export function PatientsPage() {
                           <MoreHorizontal className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
+                      <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
                         <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleViewDetails(patient)}>
                           <FileText className="mr-2 h-4 w-4" /> View Details
                         </DropdownMenuItem>
                         <DropdownMenuItem>
@@ -159,6 +170,11 @@ export function PatientsPage() {
           </TableBody>
         </Table>
       </div>
+      <PatientDetailSheet 
+        patient={selectedPatient} 
+        open={isSheetOpen} 
+        onOpenChange={setIsSheetOpen} 
+      />
     </AppLayout>
   );
 }
