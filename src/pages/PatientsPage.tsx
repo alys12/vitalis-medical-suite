@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AppLayout } from '@/components/layout/AppLayout';
-import { MOCK_PATIENTS, Patient } from '@/lib/mock-medical-data';
+import { Patient } from '@/lib/mock-medical-data';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Search, Filter, MoreHorizontal, FileText, Calendar } from 'lucide-react';
+import { Search, Filter, MoreHorizontal, FileText, Calendar, Loader2 } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -24,14 +24,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { PatientDetailSheet } from '@/components/patients/PatientDetailSheet';
+import { usePatients } from '@/lib/api-hooks';
+import { Skeleton } from '@/components/ui/skeleton';
 export function PatientsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  const filteredPatients = MOCK_PATIENTS.filter(patient =>
+  const { data: patients, isLoading, error } = usePatients();
+  const filteredPatients = patients?.filter(patient =>
     patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     patient.id.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  ) ?? [];
   const getStatusColor = (status: Patient['status']) => {
     switch (status) {
       case 'Active': return 'bg-green-100 text-green-700 hover:bg-green-200 border-green-200';
@@ -53,6 +56,16 @@ export function PatientsPage() {
     setSelectedPatient(patient);
     setIsSheetOpen(true);
   };
+  if (error) {
+    return (
+      <AppLayout container contentClassName="flex items-center justify-center min-h-screen">
+        <div className="text-center text-red-500">
+          <h2 className="text-lg font-bold">Failed to load patients</h2>
+          <p>{(error as Error).message}</p>
+        </div>
+      </AppLayout>
+    );
+  }
   return (
     <AppLayout container contentClassName="space-y-8 bg-slate-50/50 dark:bg-background min-h-screen">
       {/* Header */}
@@ -102,10 +115,21 @@ export function PatientsPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {filteredPatients.length > 0 ? (
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <TableRow key={i}>
+                  <TableCell><Skeleton className="h-10 w-40" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-20" /></TableCell>
+                  <TableCell><Skeleton className="h-6 w-20 rounded-full" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                  <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                  <TableCell><Skeleton className="h-8 w-8 ml-auto rounded-full" /></TableCell>
+                </TableRow>
+              ))
+            ) : filteredPatients.length > 0 ? (
               filteredPatients.map((patient) => (
-                <TableRow 
-                  key={patient.id} 
+                <TableRow
+                  key={patient.id}
                   className="hover:bg-slate-50/50 dark:hover:bg-muted/50 transition-colors cursor-pointer"
                   onClick={() => handleViewDetails(patient)}
                 >
@@ -170,10 +194,10 @@ export function PatientsPage() {
           </TableBody>
         </Table>
       </div>
-      <PatientDetailSheet 
-        patient={selectedPatient} 
-        open={isSheetOpen} 
-        onOpenChange={setIsSheetOpen} 
+      <PatientDetailSheet
+        patient={selectedPatient}
+        open={isSheetOpen}
+        onOpenChange={setIsSheetOpen}
       />
     </AppLayout>
   );
