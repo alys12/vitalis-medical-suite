@@ -13,6 +13,8 @@ import '@/index.css'
 import { HomePage } from '@/pages/HomePage'
 import { PatientsPage } from '@/pages/PatientsPage'
 import { SchedulePage } from '@/pages/SchedulePage'
+import { AnalyticsPage } from '@/pages/AnalyticsPage'
+import { SettingsPage } from '@/pages/SettingsPage'
 const router = createBrowserRouter([
   {
     path: "/",
@@ -29,14 +31,15 @@ const router = createBrowserRouter([
     element: <SchedulePage />,
     errorElement: <RouteErrorBoundary />,
   },
-  // Fallback for demo routes to prevent 404s during development
   {
     path: "/analytics",
-    element: <HomePage />, // Placeholder
+    element: <AnalyticsPage />,
+    errorElement: <RouteErrorBoundary />,
   },
   {
     path: "/settings",
-    element: <HomePage />, // Placeholder
+    element: <SettingsPage />,
+    errorElement: <RouteErrorBoundary />,
   }
 ]);
 // Do not touch this code

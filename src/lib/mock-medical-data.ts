@@ -357,3 +357,27 @@ export const MOCK_APPOINTMENTS: Appointment[] = [
     status: 'Scheduled'
   }
 ];
+// --- NEW ANALYTICS DATA ---
+export const MOCK_REVENUE_BY_SERVICE = [
+  { name: 'Consultations', value: 45000, color: '#0F766E' }, // Teal 700
+  { name: 'Surgery', value: 32000, color: '#0EA5E9' },      // Sky 500
+  { name: 'Lab Work', value: 18000, color: '#6366F1' },     // Indigo 500
+  { name: 'Emergency', value: 12000, color: '#F43F5E' },    // Rose 500
+  { name: 'Pharmacy', value: 8500, color: '#10B981' },      // Emerald 500
+  { name: 'Therapy', value: 9000, color: '#F59E0B' },       // Amber 500
+];
+export const MOCK_DEMOGRAPHICS = [
+  { name: '0-18', value: 15, color: '#38BDF8' },   // Sky 400
+  { name: '19-35', value: 25, color: '#818CF8' },  // Indigo 400
+  { name: '36-50', value: 30, color: '#2DD4BF' },  // Teal 400
+  { name: '51-65', value: 20, color: '#FBBF24' },  // Amber 400
+  { name: '65+', value: 10, color: '#F87171' },    // Red 400
+];
+export const MOCK_APPOINTMENT_TRENDS = [
+  { month: 'Jan', completed: 120, cancelled: 10, noShow: 5 },
+  { month: 'Feb', completed: 132, cancelled: 8, noShow: 4 },
+  { month: 'Mar', completed: 145, cancelled: 12, noShow: 6 },
+  { month: 'Apr', completed: 138, cancelled: 9, noShow: 3 },
+  { month: 'May', completed: 155, cancelled: 11, noShow: 5 },
+  { month: 'Jun', completed: 162, cancelled: 7, noShow: 4 },
+];

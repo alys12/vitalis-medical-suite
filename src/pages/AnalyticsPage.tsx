@@ -3,17 +3,14 @@ import { AppLayout } from '@/components/layout/AppLayout';
 import { RevenueChart } from '@/components/analytics/RevenueChart';
 import { DemographicsChart } from '@/components/analytics/DemographicsChart';
 import { StatsCards } from '@/components/dashboard/StatsCards';
+import { MOCK_STATS } from '@/lib/mock-medical-data';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { Button } from '@/components/ui/button';
 import { Download, Calendar as CalendarIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { useDashboard, useAnalytics } from '@/lib/api-hooks';
-import { Skeleton } from '@/components/ui/skeleton';
+import { MOCK_APPOINTMENT_TRENDS } from '@/lib/mock-medical-data';
 export function AnalyticsPage() {
-  const { data: dashboardData, isLoading: isDashboardLoading } = useDashboard();
-  const { data: analyticsData, isLoading: isAnalyticsLoading } = useAnalytics();
-  const isLoading = isDashboardLoading || isAnalyticsLoading;
   return (
     <AppLayout container contentClassName="space-y-8 bg-slate-50/50 dark:bg-background min-h-screen">
       {/* Header */}
@@ -37,29 +34,12 @@ export function AnalyticsPage() {
       </div>
       {/* KPI Cards */}
       <section>
-        {isLoading ? (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="h-32 w-full rounded-xl" />
-            ))}
-          </div>
-        ) : (
-          <StatsCards stats={dashboardData?.stats ?? []} />
-        )}
+        <StatsCards stats={MOCK_STATS} />
       </section>
       {/* Main Charts Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {isLoading ? (
-          <>
-            <Skeleton className="col-span-1 lg:col-span-2 h-[400px] rounded-xl" />
-            <Skeleton className="col-span-1 h-[400px] rounded-xl" />
-          </>
-        ) : (
-          <>
-            <RevenueChart data={analyticsData?.revenue ?? []} />
-            <DemographicsChart data={analyticsData?.demographics ?? []} />
-          </>
-        )}
+        <RevenueChart />
+        <DemographicsChart />
       </div>
       {/* Secondary Charts Row */}
       <div className="grid grid-cols-1 gap-6">
@@ -69,49 +49,45 @@ export function AnalyticsPage() {
           </CardHeader>
           <CardContent>
             <div className="h-[300px] w-full">
-              {isLoading ? (
-                <Skeleton className="w-full h-full" />
-              ) : (
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart
-                    data={analyticsData?.trends ?? []}
-                    margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
-                  >
-                    <defs>
-                      <linearGradient id="colorCompleted" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#0F766E" stopOpacity={0.2}/>
-                        <stop offset="95%" stopColor="#0F766E" stopOpacity={0}/>
-                      </linearGradient>
-                      <linearGradient id="colorCancelled" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#F43F5E" stopOpacity={0.2}/>
-                        <stop offset="95%" stopColor="#F43F5E" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#64748B' }} />
-                    <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748B' }} />
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
-                    <Tooltip
-                      contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="completed"
-                      stroke="#0F766E"
-                      fillOpacity={1}
-                      fill="url(#colorCompleted)"
-                      name="Completed"
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="cancelled"
-                      stroke="#F43F5E"
-                      fillOpacity={1}
-                      fill="url(#colorCancelled)"
-                      name="Cancelled"
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              )}
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart
+                  data={MOCK_APPOINTMENT_TRENDS}
+                  margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+                >
+                  <defs>
+                    <linearGradient id="colorCompleted" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#0F766E" stopOpacity={0.2}/>
+                      <stop offset="95%" stopColor="#0F766E" stopOpacity={0}/>
+                    </linearGradient>
+                    <linearGradient id="colorCancelled" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor="#F43F5E" stopOpacity={0.2}/>
+                      <stop offset="95%" stopColor="#F43F5E" stopOpacity={0}/>
+                    </linearGradient>
+                  </defs>
+                  <XAxis dataKey="month" axisLine={false} tickLine={false} tick={{ fill: '#64748B' }} />
+                  <YAxis axisLine={false} tickLine={false} tick={{ fill: '#64748B' }} />
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                  <Tooltip
+                    contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="completed"
+                    stroke="#0F766E"
+                    fillOpacity={1}
+                    fill="url(#colorCompleted)"
+                    name="Completed"
+                  />
+                  <Area
+                    type="monotone"
+                    dataKey="cancelled"
+                    stroke="#F43F5E"
+                    fillOpacity={1}
+                    fill="url(#colorCancelled)"
+                    name="Cancelled"
+                  />
+                </AreaChart>
+              </ResponsiveContainer>
             </div>
           </CardContent>
         </Card>
